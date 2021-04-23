@@ -1,0 +1,14 @@
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\bin\Debug\netcoreapp3.1\ChatSocketsClient.exe
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\bin\Debug\netcoreapp3.1\ChatSocketsClient.deps.json
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\bin\Debug\netcoreapp3.1\ChatSocketsClient.runtimeconfig.json
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\bin\Debug\netcoreapp3.1\ChatSocketsClient.runtimeconfig.dev.json
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\bin\Debug\netcoreapp3.1\ChatSocketsClient.dll
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\bin\Debug\netcoreapp3.1\ChatSocketsClient.pdb
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\obj\Debug\netcoreapp3.1\ChatSocketsClient.Form1.resources
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\obj\Debug\netcoreapp3.1\ChatSocketsClient.csproj.GenerateResource.cache
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\obj\Debug\netcoreapp3.1\ChatSocketsClient.AssemblyInfoInputs.cache
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\obj\Debug\netcoreapp3.1\ChatSocketsClient.AssemblyInfo.cs
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\obj\Debug\netcoreapp3.1\ChatSocketsClient.csproj.CoreCompileInputs.cache
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\obj\Debug\netcoreapp3.1\ChatSocketsClient.dll
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\obj\Debug\netcoreapp3.1\ChatSocketsClient.pdb
+C:\Users\Nicolas-PC\source\repos\ChatSocketsServer\ChatSocketsClient\obj\Debug\netcoreapp3.1\ChatSocketsClient.genruntimeconfig.cache
