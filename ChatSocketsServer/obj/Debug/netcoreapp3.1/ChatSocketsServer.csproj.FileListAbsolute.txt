@@ -17,10 +17,10 @@ D:\Projetos\ChatSockets\ChatSocketsServer\bin\Debug\netcoreapp3.1\ChatSocketsSer
 D:\Projetos\ChatSockets\ChatSocketsServer\bin\Debug\netcoreapp3.1\ChatSocketsServer.runtimeconfig.dev.json
 D:\Projetos\ChatSockets\ChatSocketsServer\bin\Debug\netcoreapp3.1\ChatSocketsServer.dll
 D:\Projetos\ChatSockets\ChatSocketsServer\bin\Debug\netcoreapp3.1\ChatSocketsServer.pdb
-D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.csprojAssemblyReference.cache
 D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.AssemblyInfoInputs.cache
 D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.AssemblyInfo.cs
 D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.csproj.CoreCompileInputs.cache
 D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.dll
 D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.pdb
 D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.genruntimeconfig.cache
+D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.csprojAssemblyReference.cache

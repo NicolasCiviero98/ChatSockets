@@ -37,7 +37,15 @@ namespace ChatSocketsClient
             this.tbxMessage = new System.Windows.Forms.TextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.lblStatus = new System.Windows.Forms.Label();
+            this.tbxContactName = new System.Windows.Forms.TextBox();
+            this.btnAddContact = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.lbxContacts = new System.Windows.Forms.ListBox();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabGlobal = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.nudPort)).BeginInit();
+            this.tabControl.SuspendLayout();
+            this.tabGlobal.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbxServerIP
@@ -72,6 +80,7 @@ namespace ChatSocketsClient
             // 
             // btnConnect
             // 
+            this.btnConnect.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnConnect.Location = new System.Drawing.Point(318, 42);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(120, 23);
@@ -90,16 +99,16 @@ namespace ChatSocketsClient
             // 
             // tbxChat
             // 
-            this.tbxChat.Location = new System.Drawing.Point(15, 77);
+            this.tbxChat.Location = new System.Drawing.Point(0, 0);
             this.tbxChat.Multiline = true;
             this.tbxChat.Name = "tbxChat";
             this.tbxChat.ReadOnly = true;
-            this.tbxChat.Size = new System.Drawing.Size(423, 295);
+            this.tbxChat.Size = new System.Drawing.Size(417, 367);
             this.tbxChat.TabIndex = 4;
             // 
             // tbxMessage
             // 
-            this.tbxMessage.Location = new System.Drawing.Point(12, 378);
+            this.tbxMessage.Location = new System.Drawing.Point(12, 472);
             this.tbxMessage.Name = "tbxMessage";
             this.tbxMessage.Size = new System.Drawing.Size(300, 23);
             this.tbxMessage.TabIndex = 6;
@@ -107,7 +116,8 @@ namespace ChatSocketsClient
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(318, 378);
+            this.btnSend.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnSend.Location = new System.Drawing.Point(318, 472);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(120, 23);
             this.btnSend.TabIndex = 5;
@@ -117,22 +127,88 @@ namespace ChatSocketsClient
             // 
             // lblStatus
             // 
-            this.lblStatus.Location = new System.Drawing.Point(15, 408);
+            this.lblStatus.Location = new System.Drawing.Point(15, 502);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(422, 32);
+            this.lblStatus.Size = new System.Drawing.Size(422, 23);
             this.lblStatus.TabIndex = 7;
             this.lblStatus.Text = "Não conectado";
             this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // tbxContactName
+            // 
+            this.tbxContactName.Location = new System.Drawing.Point(444, 473);
+            this.tbxContactName.Name = "tbxContactName";
+            this.tbxContactName.Size = new System.Drawing.Size(203, 23);
+            this.tbxContactName.TabIndex = 9;
+            this.tbxContactName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbxContactName_KeyPress);
+            // 
+            // btnAddContact
+            // 
+            this.btnAddContact.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnAddContact.Location = new System.Drawing.Point(444, 502);
+            this.btnAddContact.Name = "btnAddContact";
+            this.btnAddContact.Size = new System.Drawing.Size(102, 23);
+            this.btnAddContact.TabIndex = 10;
+            this.btnAddContact.Text = "Adicionar";
+            this.btnAddContact.UseVisualStyleBackColor = true;
+            this.btnAddContact.Click += new System.EventHandler(this.btnAddContact_Click);
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnRefresh.Location = new System.Drawing.Point(552, 502);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(95, 23);
+            this.btnRefresh.TabIndex = 11;
+            this.btnRefresh.Text = "Recarregar";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // lbxContacts
+            // 
+            this.lbxContacts.FormattingEnabled = true;
+            this.lbxContacts.IntegralHeight = false;
+            this.lbxContacts.ItemHeight = 15;
+            this.lbxContacts.Location = new System.Drawing.Point(444, 13);
+            this.lbxContacts.Name = "lbxContacts";
+            this.lbxContacts.Size = new System.Drawing.Size(203, 449);
+            this.lbxContacts.TabIndex = 13;
+            this.lbxContacts.DoubleClick += new System.EventHandler(this.lbxContacts_DoubleClick);
+            this.lbxContacts.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lbxContacts_KeyDown);
+            // 
+            // tabControl
+            // 
+            this.tabControl.Controls.Add(this.tabGlobal);
+            this.tabControl.Location = new System.Drawing.Point(12, 71);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(425, 395);
+            this.tabControl.TabIndex = 14;
+            // 
+            // tabGlobal
+            // 
+            this.tabGlobal.Controls.Add(this.tbxChat);
+            this.tabGlobal.Location = new System.Drawing.Point(4, 24);
+            this.tabGlobal.Name = "tabGlobal";
+            this.tabGlobal.Padding = new System.Windows.Forms.Padding(3);
+            this.tabGlobal.Size = new System.Drawing.Size(417, 367);
+            this.tabGlobal.TabIndex = 0;
+            this.tabGlobal.Text = "Global";
+            this.tabGlobal.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(451, 450);
+            this.ClientSize = new System.Drawing.Size(654, 534);
+            this.Controls.Add(this.tabControl);
+            this.Controls.Add(this.lbxContacts);
+            this.Controls.Add(this.btnRefresh);
+            this.Controls.Add(this.btnAddContact);
+            this.Controls.Add(this.tbxContactName);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.tbxMessage);
             this.Controls.Add(this.btnSend);
-            this.Controls.Add(this.tbxChat);
             this.Controls.Add(this.tbxName);
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.nudPort);
@@ -141,6 +217,9 @@ namespace ChatSocketsClient
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.nudPort)).EndInit();
+            this.tabControl.ResumeLayout(false);
+            this.tabGlobal.ResumeLayout(false);
+            this.tabGlobal.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -156,6 +235,12 @@ namespace ChatSocketsClient
         private System.Windows.Forms.TextBox tbxMessage;
         private System.Windows.Forms.Button btnSend;
         private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.TextBox tbxContactName;
+        private System.Windows.Forms.Button btnAddContact;
+        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.ListBox lbxContacts;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage tabGlobal;
     }
 }
 

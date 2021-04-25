@@ -1,25 +1,44 @@
-﻿using System;
+﻿using ChatSocketsServer;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Windows.Forms;
 
-namespace ChatSocketsServer
+namespace ChatSocketsClient
 {
-    public class Connection
+    public class DirectConnection
     {
-        public TcpClient tcpClient;
+        public Form1 Form;
+        public TabPage Page;
+        public TextBox Chat;
+
+
+        public TcpClient tcpClient;        
         private Thread thrSender;
         private StreamReader srReceiver;
         private StreamWriter swSender;
         private string strAnswer;
-        public string UserName;        
+        public string UserName;
         public string IpAddress;
         public int Port;
 
-        public Connection(TcpClient tcpCon)
+        public DirectConnection(TcpClient tcpCon, string userName, Form1 form)
         {
+            Form = form;
             tcpClient = tcpCon;
+            UserName = userName;
+            Setup();
+        }
+        public DirectConnection(TcpClient tcpCon, Form1 form)
+        {
+            Form = form;
+            tcpClient = tcpCon;
+            Setup();
+        }
+        private void Setup()
+        {
             srReceiver = new StreamReader(tcpClient.GetStream());
             swSender = new StreamWriter(tcpClient.GetStream());
             var endPoint = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
@@ -30,7 +49,9 @@ namespace ChatSocketsServer
             thrSender.IsBackground = true;
             thrSender.Start();
         }
-        public void CloseConnection()
+
+
+        private void CloseConnection()
         {
             tcpClient.Close();
             srReceiver.Close();
@@ -38,36 +59,22 @@ namespace ChatSocketsServer
         }
         private void AcceptClient()
         {
-            UserName = MsgEncoding.Decode(srReceiver.ReadLine()).Body;
-            if (!ValidateUserName()) return;
-            SendToClient(MsgCode.ConnectionSuccess, $"{IpAddress}:{Port}");
-            ChatServer.IncludeUser(this);
+            //algum tipo de verificação?
+
+            if (string.IsNullOrEmpty(UserName))
+            {
+                UserName = MsgEncoding.Decode(srReceiver.ReadLine()).Body;
+                if(Page != null)
+                {
+                    Page.Text = UserName;
+                }
+            }
+
+
+            Form.Connections.Add(this);
             KeepListening();
         }
 
-        private bool ValidateUserName()
-        {
-            if (string.IsNullOrEmpty(UserName))
-            {
-                CloseConnection();
-                return false;
-            }
-            if (ChatServer.Connections.Exists(x => x.UserName == UserName))
-            {
-                swSender.WriteLine("UserName already exists!");
-                swSender.Flush();
-                CloseConnection();
-                return false;
-            }
-            if (UserName == "Administrator")
-            {
-                swSender.WriteLine("Invalid UserName");
-                swSender.Flush();
-                CloseConnection();
-                return false;
-            }
-            return true;
-        }
         private void KeepListening()
         {
             try
@@ -77,7 +84,8 @@ namespace ChatSocketsServer
                     strAnswer = srReceiver.ReadLine();
                     if (strAnswer == null)
                     {
-                        ChatServer.RemoveUser(this);
+                        Form.Connections.Remove(this);
+                        CloseConnection();
                         break;
                     }
                     var answer = MsgEncoding.Decode(strAnswer);
@@ -87,15 +95,20 @@ namespace ChatSocketsServer
                             var message = answer.Body;
                             ChatServer.SendMessage(UserName, message);
                             break;
+                        case MsgCode.DirectChat:
+                            ShowDirectMessage(answer.Body);
+                            break;
                         case MsgCode.RequestConnection:
                             ChatServer.GiveConnectionInfo(answer.Body);
                             break;
+
                     }
                 }
             }
             catch (Exception)
             {
-                ChatServer.RemoveUser(this);
+                Form.Connections.Remove(this);
+                CloseConnection();
             }
         }
 
@@ -105,6 +118,10 @@ namespace ChatSocketsServer
             swSender.WriteLine(text);
             swSender.Flush();
         }
+
+        private void ShowDirectMessage(string message)
+        {
+            Form.Invoke((Action)(() => Chat.AppendText(message + "\r\n")));
+        }
     }
-   
 }

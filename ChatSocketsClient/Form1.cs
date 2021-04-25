@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChatSocketsServer;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static ChatSocketsClient.Properties.Settings;
 
 namespace ChatSocketsClient
 {
@@ -24,10 +26,16 @@ namespace ChatSocketsClient
         private StreamReader strReceiver;
         private TcpClient tcpServer;
 
+        private TcpListener listener;
+        private Thread thrListener;
+        private bool listening;
+
         private Thread messageThread;
-        private IPAddress ipAddress;
-        private int hostPort;
+        private IPAddress serverIpAddress;
+        private int serverHostPort;
         private bool connected;
+
+        public List<DirectConnection> Connections = new List<DirectConnection>();
 
         public Form1()
         {
@@ -36,8 +44,16 @@ namespace ChatSocketsClient
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            UpdateUi(false);
+            UpdateVisibility(false);
+            foreach (var contact in Default.ContactList.Split("\n"))
+            {
+                if (contact != "")
+                {
+                    lbxContacts.Items.Add(contact);
+                }
+            }
         }
+
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
@@ -50,12 +66,10 @@ namespace ChatSocketsClient
                 CloseConnection("User requested to disconnect");
             }
         }
-
         private void btnSend_Click(object sender, EventArgs e)
         {
             SendMessage();
         }
-
         private void tbxMessage_KeyPress(object sender, KeyPressEventArgs e)
         {
             if(e.KeyChar == (char)13)
@@ -64,22 +78,58 @@ namespace ChatSocketsClient
                 e.Handled = true;
             }
         }
+        private void btnAddContact_Click(object sender, EventArgs e)
+        {
+            AddContact();
+        }
+        private void lbxContacts_DoubleClick(object sender, EventArgs e)
+        {
+            if (connected)
+            {
+                RequestConnection((string)lbxContacts.SelectedItem);
+            }
+        }
+        private void lbxContacts_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                var contact = (string)lbxContacts.SelectedItem;
+                var contacts = Default.ContactList.Split("\n").ToList();
+                contacts.Remove(contact);
+                Default.ContactList = string.Join('\n', contacts);
+                Default.Save();
+                lbxContacts.Items.RemoveAt(lbxContacts.SelectedIndex);
+                e.Handled = true;
+            }
+        }
+        private void tbxContactName_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)
+            {
+                AddContact();
+                e.Handled = true;
+            }
+        }
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+
+        }
+
 
         private void StartConnection()
         {
             try
             {
-                ipAddress = IPAddress.Parse(tbxServerIP.Text);
-                hostPort = (int)nudPort.Value;
+                serverIpAddress = IPAddress.Parse(tbxServerIP.Text);
+                serverHostPort = (int)nudPort.Value;
                 tcpServer = new TcpClient();
-                tcpServer.Connect(ipAddress, hostPort);
+                tcpServer.Connect(serverIpAddress, serverHostPort);
                 connected = true;
                 UserName = tbxName.Text;
-                UpdateUi(true);
+                UpdateVisibility(true);
 
                 stwSender = new StreamWriter(tcpServer.GetStream());
-                stwSender.WriteLine(tbxName.Text);
-                stwSender.Flush();
+                SendToServer(tbxName.Text);
 
                 messageThread = new Thread(ReceiveMessages);
                 messageThread.IsBackground = true;
@@ -92,49 +142,57 @@ namespace ChatSocketsClient
                 lblStatus.Invoke(new Action(() => lblStatus.Text = "Erro de conexão: " + e));
             }
         }
-
         private void ReceiveMessages()
         {
             strReceiver = new StreamReader(tcpServer.GetStream());
-            string connectionAnswer = strReceiver.ReadLine();
-            if(connectionAnswer[0] == '1')
-            {
-                Invoke(new UpdateCallBack(UpdateLog), new object[] { "Conectado com sucesso!" });
-            }
-            else
-            {
-                string serverMessage = connectionAnswer.Substring(2, connectionAnswer.Length - 2);
-                string reason = $"Não conectado: {serverMessage}";
-                Invoke(new UpdateCallBack(CloseConnection), new object[] { reason });
-                return;
-            }
-
             while (connected)
             {
-                Invoke(new UpdateCallBack(UpdateLog), new object[] { strReceiver.ReadLine() });
+                string answerString = strReceiver.ReadLine();
+                var answer = MsgEncoding.Decode(answerString);
+                switch (answer.Code)
+                {
+                    case MsgCode.ConnectionSuccess:
+                        Invoke(new UpdateCallBack(UpdateLog), new object[] { "Conectado com sucesso!" });
+                        StartListener(answer.Body);
+                        break;
+                    case MsgCode.ConnectionError:
+                        string reason = $"Erro de conexão: {answer.Body}";
+                        Invoke(new UpdateCallBack(CloseConnection), new object[] { reason });
+                        break;
+                    case MsgCode.GlobalChat:
+                        Invoke(new UpdateCallBack(UpdateLog), new object[] { answer.Body });
+                        break;
+                    case MsgCode.RequestConnection:
+                        Invoke(new UpdateCallBack(UpdateLog), new object[] { "Received Requested IP: " + answer.Body });
+                        StartDirectConnection(answer.Body);
+                        break;
+                }
             }
         }
-
         private void UpdateLog(string message)
         {
             tbxChat.AppendText(message + "\r\n");
         }
-
         private void SendMessage()
         {
             if (tbxMessage.Lines.Length != 0)
             {
-                stwSender.WriteLine(tbxMessage.Text);
-                stwSender.Flush();
+                if (tabControl.SelectedTab == tabGlobal)
+                {
+                    SendToServer(MsgCode.GlobalChat, tbxMessage.Text);
+                }
+                else
+                {
+                    SendDirectMessage(tbxMessage.Text);
+                }
+                
             }
             tbxMessage.Lines = null;
-
             tbxMessage.Text = "";
         }
-
         private void CloseConnection(string reason)
         {
-            UpdateUi(false);
+            UpdateVisibility(false);
 
             connected = false;
             stwSender.Close();
@@ -143,7 +201,6 @@ namespace ChatSocketsClient
 
             lblStatus.Invoke(new Action(() => lblStatus.Text = "Desconectado"));
         }
-
         public void OnApplicationExit(object sender, EventArgs e)
         {
             if (connected)
@@ -156,9 +213,7 @@ namespace ChatSocketsClient
                 lblStatus.Invoke(new Action(() => lblStatus.Text = "Desconectado"));
             }
         }
-
-
-        private void UpdateUi(bool connected)
+        private void UpdateVisibility(bool connected)
         {
             tbxServerIP.Enabled = !connected;
             nudPort.Enabled = !connected;
@@ -166,7 +221,110 @@ namespace ChatSocketsClient
             tbxMessage.Enabled = connected;
             btnSend.Enabled = connected;
             btnConnect.Text = connected ? "Desconectar" : "Conectar";
+        }        
+        private void AddContact()
+        {
+            if (string.IsNullOrEmpty(tbxContactName.Text)) return;
+            foreach (string item in lbxContacts.Items)
+            {
+                if (item == tbxContactName.Text) return;
+            }
+
+            lbxContacts.Items.Add(tbxContactName.Text);
+            Default.ContactList += $"{tbxContactName.Text}\n";
+            Default.Save();
+            tbxContactName.Text = "";
+        }     
+        private void RequestConnection(string contactName)
+        {
+            SendToServer(MsgCode.RequestConnection, $"{contactName};{UserName}");
+        }
+        private void SendToServer(MsgCode code, string body)
+        {
+            var text = MsgEncoding.Encode(code, body);
+            stwSender.WriteLine(text);
+            stwSender.Flush();
+        }
+        private void SendToServer(string body)
+        {
+            var text = MsgEncoding.Encode(MsgCode.Standard, body);
+            stwSender.WriteLine(text);
+            stwSender.Flush();
         }
 
+        private void SendDirectMessage(string message)
+        {
+            var formattedMsg = $"{UserName}: {message}";
+            var connection = Connections.FirstOrDefault(x => x.Page == tabControl.SelectedTab);
+            connection.SendToClient(MsgCode.DirectChat, formattedMsg);
+            Invoke((Action)(() => connection.Chat.AppendText(formattedMsg + "\r\n")));
+        }
+        private void StartDirectConnection(string address)
+        {
+            var parameters = address.Split(":");
+            var ipAddress = IPAddress.Parse(parameters[0]);
+            var hostPort = int.Parse(parameters[1]);
+            var userName = parameters[2];
+            var tcpContact = new TcpClient();
+            tcpContact.Connect(ipAddress, hostPort);
+            var connection = new DirectConnection(tcpContact, userName, this);
+            connection.SendToClient(MsgCode.Standard, UserName);
+            AddChatTab(connection);
+        }
+        public void StartListener(string address)
+        {
+            try
+            {
+                var parameters = address.Split(":");
+                IPAddress ipLocal = IPAddress.Parse(parameters[0]);
+                int portLocal = int.Parse(parameters[1]);
+
+                listener = new TcpListener(ipLocal, portLocal);
+                listener.Start();
+                listening = true;
+
+                thrListener = new Thread(KeepListening);
+                thrListener.IsBackground = true;
+                thrListener.Start();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        public void KeepListening()
+        {
+            while (listening)
+            {
+                var tcpClient = listener.AcceptTcpClient();
+                DirectConnection connection = new DirectConnection(tcpClient, this);
+                AddChatTab(connection);
+            }
+        }
+
+
+        private void AddChatTab(DirectConnection contact)
+        {
+            try
+            {
+                var page = new TabPage();
+                page.Text = contact.UserName;
+
+                var tbx = new TextBox();
+                tbx.Parent = page;
+                tbx.Multiline = true;
+                tbx.Location = new Point(0, 0);
+                tbx.Size = tabGlobal.Size;
+
+                contact.Page = page;
+                contact.Chat = tbx;
+
+                Invoke((Action)(() => tabControl.TabPages.Add(page)));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }            
+        }
     }
 }

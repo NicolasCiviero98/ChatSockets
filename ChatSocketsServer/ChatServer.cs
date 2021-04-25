@@ -6,19 +6,21 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.IO;
+using System.Linq;
 
 namespace ChatSocketsServer
 {
     public delegate void StatusChangedEventHandler(string message);
     public class ChatServer
     {
-        public static Hashtable htUsuarios = new Hashtable(30);
-        public static Hashtable htConexoes = new Hashtable(30);
+        //public static Hashtable htUsuarios = new Hashtable(30);
+        //public static Hashtable htConexoes = new Hashtable(30);
+        public static List<Connection> Connections = new List<Connection>();
+
         public static event StatusChangedEventHandler StatusChanged;
 
         private IPAddress enderecoIp;
         private int portaHost;
-        private TcpClient tcpClient;
 
         public ChatServer(IPAddress ipAddres, int port)
         {
@@ -28,22 +30,20 @@ namespace ChatSocketsServer
 
         private Thread thrListener;
         private TcpListener tlsCliente;
-        bool servRodando = false;
+        bool running = false;
 
-        public static void IncludeUser(TcpClient tcpUser, string userName)
+        public static void IncludeUser(Connection connection)
         {
-            htUsuarios.Add(userName, tcpUser);
-            htConexoes.Add(tcpUser, userName);
-
-            SendAdminMessage(userName + " entrou...");
+            Connections.Add(connection);
+            SendAdminMessage(connection.UserName + " entrou...");
         }
-        public static void RemoveUser(TcpClient tcpUser)
+        public static void RemoveUser(Connection connection)
         {
-            if(htConexoes[tcpUser] != null)
+            if(Connections.Exists(x => x.UserName == connection.UserName))
             {
-                SendAdminMessage(htConexoes[tcpUser] + " saiu...");
-                htUsuarios.Remove(htConexoes[tcpUser]);
-                htConexoes.Remove(tcpUser);
+                SendAdminMessage(connection.UserName + " saiu...");
+                Connections.Remove(connection);
+                connection.CloseConnection();
             }
         }
 
@@ -58,25 +58,19 @@ namespace ChatSocketsServer
         public static void SendAdminMessage(string message)
         {
             if (string.IsNullOrEmpty(message.Trim())) return;
+            var formattedMsg = $"Administrator: {message}";
+            OnStatusChanged(formattedMsg);
 
-            StreamWriter swSenderSender;
-            OnStatusChanged($"Administrator: {message}");
-
-            var tcpClients = new TcpClient[htUsuarios.Count];
-            htUsuarios.Values.CopyTo(tcpClients, 0);
-            foreach (TcpClient client in tcpClients)
+            foreach (Connection c in Connections)
             {
-                if (client == null) continue;
+                if (c.tcpClient == null) continue;
                 try
                 {
-                    swSenderSender = new StreamWriter(client.GetStream());
-                    swSenderSender.WriteLine($"Administrator: {message}");
-                    swSenderSender.Flush();
-                    swSenderSender = null;
+                    c.SendToClient(MsgCode.GlobalChat, formattedMsg);
                 }
                 catch
                 {
-                    RemoveUser(client);
+                    RemoveUser(c);
                 }
             }
         }
@@ -84,41 +78,57 @@ namespace ChatSocketsServer
         public static void SendMessage(string senderName, string message)
         {
             if (string.IsNullOrEmpty(message.Trim())) return;
+            var formattedMsg = $"{senderName} said: {message}";
+            OnStatusChanged(formattedMsg);
 
-            StreamWriter swSenderSender;
-            OnStatusChanged($"{senderName} said: {message}");
-
-            var tcpClients = new TcpClient[htUsuarios.Count];
-            htUsuarios.Values.CopyTo(tcpClients, 0);
-            foreach (TcpClient client in tcpClients)
+            foreach (Connection c in Connections)
             {
-                if (client == null) continue;
+                if (c.tcpClient == null) continue;
                 try
                 {
-                    swSenderSender = new StreamWriter(client.GetStream());
-                    swSenderSender.WriteLine($"Administrator: {message}");
-                    swSenderSender.Flush();
-                    swSenderSender = null;
+                    c.SendToClient(MsgCode.GlobalChat, formattedMsg);
                 }
                 catch
                 {
-                    RemoveUser(client);
+                    RemoveUser(c);
                 }
             }
+        }
+
+        public static void GiveConnectionInfo(string request)
+        {
+            try
+            {
+                var parameters = request.Split(";");
+                string contactName = parameters[0];
+                string userName = parameters[1];
+                var connection = Connections.FirstOrDefault(x => x.UserName == userName);
+                var contact = Connections.FirstOrDefault(x => x.UserName == contactName);
+                if (connection != null)
+                {
+                    var message = $"{contact.IpAddress}:{contact.Port}:{contact.UserName}";
+                    connection.SendToClient(MsgCode.RequestConnection, message);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
         }
 
         public void Start()
         {
             try
             {                
-                IPAddress ipaLocal = enderecoIp;
-                int portaLocal = portaHost;
+                IPAddress ipLocal = enderecoIp;
+                int portLocal = portaHost;
 
-                tlsCliente = new TcpListener(ipaLocal, portaLocal);
+                tlsCliente = new TcpListener(ipLocal, portLocal);
                 tlsCliente.Start();
-                servRodando = true;
+                running = true;
 
-                thrListener = new Thread(MantemAtendimento);
+                thrListener = new Thread(KeepListening);
                 thrListener.IsBackground = true;
                 thrListener.Start();
             }
@@ -128,13 +138,17 @@ namespace ChatSocketsServer
             }
         }
 
-        public void MantemAtendimento()
+        public void KeepListening()
         {
-            while (servRodando)
+            while (running)
             {
-                tcpClient = tlsCliente.AcceptTcpClient();
+                var tcpClient = tlsCliente.AcceptTcpClient();
+                var endPoint = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
+                Console.WriteLine($"Accepted new client: {endPoint.Address}:{endPoint.Port}");
                 Connection connection = new Connection(tcpClient);
             }
         }
+
+        
     }
 }

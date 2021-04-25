@@ -26,12 +26,6 @@ namespace ChatSocketsServer
             }
         }
 
-        static void MainServer_StatusChanged(string message)
-        {
-            //this.Invoke(new UpdateStatusCallback(UpdateStatus), new object[] { message });
-            UpdateStatus(message);
-        }
-
         private static void UpdateStatus(string message)
         {
             Console.WriteLine(message);
