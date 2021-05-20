@@ -90,6 +90,13 @@ namespace ChatSocketsServer
                         case MsgCode.RequestConnection:
                             ChatServer.GiveConnectionInfo(answer.Body);
                             break;
+                        case MsgCode.OnlineListRequest:
+                            var r = "";
+                            foreach (var item in ChatServer.Connections) {
+                                r += item.UserName + ":";
+                            }
+                            SendToClient(MsgCode.OnlineListRequest, r);
+                            break;
                     }
                 }
             }

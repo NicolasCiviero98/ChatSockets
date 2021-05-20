@@ -45,6 +45,9 @@ namespace ChatSocketsClient
         private void Form1_Load(object sender, EventArgs e)
         {
             UpdateVisibility(false);
+
+
+
             foreach (var contact in Default.ContactList.Split("\n"))
             {
                 if (contact != "")
@@ -112,7 +115,7 @@ namespace ChatSocketsClient
         }
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-
+            RequestOnlineList();
         }
 
 
@@ -136,6 +139,8 @@ namespace ChatSocketsClient
                 messageThread.Start();
 
                 lblStatus.Invoke(new Action(() => lblStatus.Text = "Conectado"));
+
+                RequestOnlineList();
             }
             catch (Exception e)
             {
@@ -166,6 +171,9 @@ namespace ChatSocketsClient
                         Invoke(new UpdateCallBack(UpdateLog), new object[] { "Received Requested IP: " + answer.Body });
                         StartDirectConnection(answer.Body);
                         break;
+                    case MsgCode.OnlineListRequest:
+                        UpdateOnlineList(answer.Body);
+                        break;
                 }
             }
         }
@@ -190,6 +198,12 @@ namespace ChatSocketsClient
             tbxMessage.Lines = null;
             tbxMessage.Text = "";
         }
+
+        private void RequestOnlineList()
+        {
+            SendToServer(MsgCode.OnlineListRequest, "");
+        }
+
         private void CloseConnection(string reason)
         {
             UpdateVisibility(false);
@@ -301,6 +315,25 @@ namespace ChatSocketsClient
                 AddChatTab(connection);
             }
         }
+        public void UpdateOnlineList(string list)
+        {
+            //TODO analisar lista de contatos online
+            var contactListOnline = list.Split(":").ToList();
+            var contactList = Default.ContactList.Split("\n");
+            lbxContacts.Items.Clear();
+            foreach (string item in contactList)
+            {
+                if (contactListOnline.Contains(item))
+                {
+                    // adicionar na lista online
+                    lbxContacts.Items.Add(item);
+                }
+                else
+                {
+                    // adicionar lista offline
+                }
+            }
+        }
 
 
         private void AddChatTab(DirectConnection contact)
@@ -325,6 +358,11 @@ namespace ChatSocketsClient
             {
                 Console.WriteLine(e);
             }            
+        }
+
+        private void listBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

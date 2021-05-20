@@ -149,6 +149,16 @@ namespace ChatSocketsServer
             }
         }
 
+        public void ReturnAllOnline(Connection c)
+        {
+            var message = "";
+            foreach (var item in Connections)
+            {
+                message += item.UserName + ":";
+            }
+            c.SendToClient(MsgCode.OnlineListRequest, message);
+        }
+
         
     }
 }

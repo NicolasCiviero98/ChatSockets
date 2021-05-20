@@ -36,6 +36,7 @@ namespace ChatSocketsServer
         RequestUserList,
         RequestConnection,
         GlobalChat,
-        DirectChat
+        DirectChat,
+        OnlineListRequest
     }
 }

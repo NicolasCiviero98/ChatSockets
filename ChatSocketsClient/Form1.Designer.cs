@@ -171,7 +171,7 @@ namespace ChatSocketsClient
             this.lbxContacts.ItemHeight = 15;
             this.lbxContacts.Location = new System.Drawing.Point(444, 13);
             this.lbxContacts.Name = "lbxContacts";
-            this.lbxContacts.Size = new System.Drawing.Size(203, 449);
+            this.lbxContacts.Size = new System.Drawing.Size(203, 202);
             this.lbxContacts.TabIndex = 13;
             this.lbxContacts.DoubleClick += new System.EventHandler(this.lbxContacts_DoubleClick);
             this.lbxContacts.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lbxContacts_KeyDown);
