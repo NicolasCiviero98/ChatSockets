@@ -43,6 +43,7 @@ namespace ChatSocketsClient
             this.lbxContacts = new System.Windows.Forms.ListBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGlobal = new System.Windows.Forms.TabPage();
+            this.lbxContactsOff = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.nudPort)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGlobal.SuspendLayout();
@@ -166,12 +167,13 @@ namespace ChatSocketsClient
             // 
             // lbxContacts
             // 
+            this.lbxContacts.ForeColor = System.Drawing.Color.Lime;
             this.lbxContacts.FormattingEnabled = true;
             this.lbxContacts.IntegralHeight = false;
             this.lbxContacts.ItemHeight = 15;
             this.lbxContacts.Location = new System.Drawing.Point(444, 13);
             this.lbxContacts.Name = "lbxContacts";
-            this.lbxContacts.Size = new System.Drawing.Size(203, 202);
+            this.lbxContacts.Size = new System.Drawing.Size(200, 220);
             this.lbxContacts.TabIndex = 13;
             this.lbxContacts.DoubleClick += new System.EventHandler(this.lbxContacts_DoubleClick);
             this.lbxContacts.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lbxContacts_KeyDown);
@@ -196,11 +198,23 @@ namespace ChatSocketsClient
             this.tabGlobal.Text = "Global";
             this.tabGlobal.UseVisualStyleBackColor = true;
             // 
+            // lbxContactsOff
+            // 
+            this.lbxContactsOff.ForeColor = System.Drawing.Color.Red;
+            this.lbxContactsOff.FormattingEnabled = true;
+            this.lbxContactsOff.IntegralHeight = false;
+            this.lbxContactsOff.ItemHeight = 15;
+            this.lbxContactsOff.Location = new System.Drawing.Point(444, 242);
+            this.lbxContactsOff.Name = "lbxContactsOff";
+            this.lbxContactsOff.Size = new System.Drawing.Size(200, 220);
+            this.lbxContactsOff.TabIndex = 15;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(654, 534);
+            this.Controls.Add(this.lbxContactsOff);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.lbxContacts);
             this.Controls.Add(this.btnRefresh);
@@ -241,6 +255,7 @@ namespace ChatSocketsClient
         private System.Windows.Forms.ListBox lbxContacts;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabGlobal;
+        private System.Windows.Forms.ListBox lbxContactsOff;
     }
 }
 

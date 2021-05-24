@@ -115,6 +115,8 @@ namespace ChatSocketsClient
         }
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            lbxContacts.Items.Clear();
+            lbxContactsOff.Items.Clear();
             RequestOnlineList();
         }
 
@@ -138,8 +140,7 @@ namespace ChatSocketsClient
                 messageThread.IsBackground = true;
                 messageThread.Start();
 
-                lblStatus.Invoke(new Action(() => lblStatus.Text = "Conectado"));
-
+                lblStatus.Invoke(new Action(() => lblStatus.Text = "Conectado"));             
                 RequestOnlineList();
             }
             catch (Exception e)
@@ -331,6 +332,7 @@ namespace ChatSocketsClient
                 else
                 {
                     // adicionar lista offline
+                    lbxContactsOff.Items.Add(item);
                 }
             }
         }
@@ -358,11 +360,6 @@ namespace ChatSocketsClient
             {
                 Console.WriteLine(e);
             }            
-        }
-
-        private void listBox1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
