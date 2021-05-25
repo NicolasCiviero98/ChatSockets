@@ -9,27 +9,19 @@ namespace ChatSocketsServer
         private delegate void UpdateStatusCallback(string message);
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
-            IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
-            int hostPort = 1024;
+            Console.WriteLine("Enter Server IP:");
+            var ipString = Console.ReadLine();
+            Console.WriteLine("Enter Server Port:");
+            var hostPortString = Console.ReadLine();
+            IPAddress ipAddress = IPAddress.Parse(ipString);
+            int hostPort = int.Parse(hostPortString);
 
             ChatServer mainServer = new ChatServer(ipAddress, hostPort);
-            ChatServer.StatusChanged += new StatusChangedEventHandler(UpdateStatus);
             mainServer.Start();
-            Console.WriteLine("Server Started!");
+            Console.WriteLine($"Server Started at {ipString}:{hostPortString}");
             _connected = true;
 
-            while (_connected)
-            {
-
-            }
+            while (_connected) { }
         }
-
-        private static void UpdateStatus(string message)
-        {
-            Console.WriteLine(message);
-        }
-
     }
 }

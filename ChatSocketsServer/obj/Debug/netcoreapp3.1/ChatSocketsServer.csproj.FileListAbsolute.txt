@@ -23,4 +23,3 @@ D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsSer
 D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.dll
 D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.pdb
 D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.genruntimeconfig.cache
-D:\Projetos\ChatSockets\ChatSocketsServer\obj\Debug\netcoreapp3.1\ChatSocketsServer.csprojAssemblyReference.cache

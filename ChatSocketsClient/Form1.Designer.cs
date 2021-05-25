@@ -167,6 +167,7 @@ namespace ChatSocketsClient
             // 
             // lbxContacts
             // 
+            this.lbxContacts.Enabled = false;
             this.lbxContacts.ForeColor = System.Drawing.Color.Lime;
             this.lbxContacts.FormattingEnabled = true;
             this.lbxContacts.IntegralHeight = false;
@@ -200,6 +201,7 @@ namespace ChatSocketsClient
             // 
             // lbxContactsOff
             // 
+            this.lbxContactsOff.Enabled = false;
             this.lbxContactsOff.ForeColor = System.Drawing.Color.Red;
             this.lbxContactsOff.FormattingEnabled = true;
             this.lbxContactsOff.IntegralHeight = false;

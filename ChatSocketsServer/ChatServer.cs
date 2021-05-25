@@ -10,14 +10,12 @@ using System.Linq;
 
 namespace ChatSocketsServer
 {
-    public delegate void StatusChangedEventHandler(string message);
     public class ChatServer
     {
         //public static Hashtable htUsuarios = new Hashtable(30);
         //public static Hashtable htConexoes = new Hashtable(30);
         public static List<Connection> Connections = new List<Connection>();
 
-        public static event StatusChangedEventHandler StatusChanged;
 
         private IPAddress enderecoIp;
         private int portaHost;
@@ -47,19 +45,10 @@ namespace ChatSocketsServer
             }
         }
 
-        public static void OnStatusChanged(string message)
-        {
-            if(StatusChanged != null)
-            {
-                StatusChanged(message);
-            }
-        }
-
         public static void SendAdminMessage(string message)
         {
             if (string.IsNullOrEmpty(message.Trim())) return;
             var formattedMsg = $"Administrator: {message}";
-            OnStatusChanged(formattedMsg);
 
             foreach (Connection c in Connections)
             {
@@ -79,7 +68,6 @@ namespace ChatSocketsServer
         {
             if (string.IsNullOrEmpty(message.Trim())) return;
             var formattedMsg = $"{senderName} said: {message}";
-            OnStatusChanged(formattedMsg);
 
             foreach (Connection c in Connections)
             {

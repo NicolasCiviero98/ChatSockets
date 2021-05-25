@@ -46,8 +46,6 @@ namespace ChatSocketsClient
         {
             UpdateVisibility(false);
 
-
-
             foreach (var contact in Default.ContactList.Split("\n"))
             {
                 if (contact != "")
@@ -318,23 +316,27 @@ namespace ChatSocketsClient
         }
         public void UpdateOnlineList(string list)
         {
-            //TODO analisar lista de contatos online
             var contactListOnline = list.Split(":").ToList();
             var contactList = Default.ContactList.Split("\n");
-            lbxContacts.Items.Clear();
-            foreach (string item in contactList)
+            Invoke((Action)(() =>
             {
-                if (contactListOnline.Contains(item))
+                lbxContacts.Enabled = true;
+                lbxContactsOff.Enabled = true;
+                lbxContacts.Items.Clear();
+                lbxContactsOff.Items.Clear();
+                foreach (string item in contactList)
                 {
-                    // adicionar na lista online
-                    lbxContacts.Items.Add(item);
+                    if (contactListOnline.Contains(item))
+                    {
+                        lbxContacts.Items.Add(item);
+                    }
+                    else
+                    {
+                        lbxContactsOff.Items.Add(item);
+                    }
                 }
-                else
-                {
-                    // adicionar lista offline
-                    lbxContactsOff.Items.Add(item);
-                }
-            }
+            }));
+            
         }
 
 

@@ -54,15 +54,13 @@ namespace ChatSocketsServer
             }
             if (ChatServer.Connections.Exists(x => x.UserName == UserName))
             {
-                swSender.WriteLine("UserName already exists!");
-                swSender.Flush();
+                SendToClient(MsgCode.ConnectionError, "UserName already exists!");
                 CloseConnection();
                 return false;
             }
             if (UserName == "Administrator")
             {
-                swSender.WriteLine("Invalid UserName");
-                swSender.Flush();
+                SendToClient(MsgCode.ConnectionError, "Invalid UserName");
                 CloseConnection();
                 return false;
             }
@@ -75,6 +73,7 @@ namespace ChatSocketsServer
                 while (true)
                 {
                     strAnswer = srReceiver.ReadLine();
+                    Console.WriteLine("Received " + strAnswer);
                     if (strAnswer == null)
                     {
                         ChatServer.RemoveUser(this);
@@ -109,6 +108,7 @@ namespace ChatSocketsServer
         public void SendToClient(MsgCode code, string body)
         {
             var text = MsgEncoding.Encode(code, body);
+            Console.WriteLine("Sent     " + text);
             swSender.WriteLine(text);
             swSender.Flush();
         }
